@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Contrast diff — before vs after</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0e0e10;
+    color: #e4e4ec;
+    font-family: system-ui, sans-serif;
+    font-size: 13px;
+    padding: 32px;
+  }
+  h1 { font-size: 18px; font-weight: 700; margin-bottom: 24px; color: #e4e4ec; }
+  h2 {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: #72727e;
+    margin: 32px 0 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #3c3c42;
+  }
+  table { border-collapse: collapse; width: 100%; max-width: 780px; }
+  th {
+    text-align: left; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.08em; color: #72727e; padding: 4px 8px;
+  }
+  td { padding: 3px 8px; vertical-align: middle; }
+  .name { font-family: monospace; font-size: 11px; color: #8e8e98; white-space: nowrap; }
+
+  /* ── Swatch cell ── */
+  .cell { display: flex; align-items: center; gap: 8px; }
+  .swatch {
+    width: 28px; height: 28px; border-radius: 4px;
+    flex-shrink: 0;
+    outline: 1px solid rgba(255,255,255,0.08);
+  }
+  .hex { font-family: monospace; font-size: 11px; }
+
+  /* ── Arrow ── */
+  .arrow { color: #545460; font-size: 14px; text-align: center; width: 24px; }
+
+  /* ── Text preview cells ── */
+  .text-preview {
+    padding: 6px 10px;
+    background: #202024;
+    border-radius: 4px;
+    white-space: nowrap;
+    font-size: 13px;
+  }
+
+  /* ── Border preview cells ── */
+  .brd-preview {
+    width: 60px; height: 28px;
+    background: #202024;
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .brd-inner {
+    width: 44px; height: 16px;
+    border-radius: 3px;
+    background: #1a1a1d;
+  }
+
+  /* ── Divider between before/after ── */
+  .sep { width: 1px; background: #3c3c42; }
+</style>
+</head>
+<body>
+
+<h1>Contrast diff</h1>
+<p style="color:#8e8e98; font-size:12px; margin-bottom:4px;">All tokens shown on <code style="background:#1a1a1d;padding:1px 5px;border-radius:3px;color:#b2b2bc">--bg-1 #202024</code> background. Left = before, Right = after.</p>
+
+<h2>Borders (shown as box outlines)</h2>
+<table>
+  <thead><tr><th>Token</th><th colspan="2">Before</th><th></th><th colspan="2">After</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="name">--brd-1</td>
+      <td><div class="brd-preview"><div class="brd-inner" style="border:1px solid #2c2c30"></div></div></td>
+      <td><span class="hex" style="color:#8e8e98">#2c2c30</span></td>
+      <td class="arrow">→</td>
+      <td><div class="brd-preview"><div class="brd-inner" style="border:1px solid #3c3c42"></div></div></td>
+      <td><span class="hex" style="color:#e4e4ec">#3c3c42</span></td>
+    </tr>
+    <tr>
+      <td class="name">--brd-2</td>
+      <td><div class="brd-preview"><div class="brd-inner" style="border:1px solid #404046"></div></div></td>
+      <td><span class="hex" style="color:#8e8e98">#404046</span></td>
+      <td class="arrow">→</td>
+      <td><div class="brd-preview"><div class="brd-inner" style="border:1px solid #545460"></div></div></td>
+      <td><span class="hex" style="color:#e4e4ec">#545460</span></td>
+    </tr>
+    <tr>
+      <td class="name">--brd-3</td>
+      <td><div class="brd-preview"><div class="brd-inner" style="border:1px solid #545458"></div></div></td>
+      <td><span class="hex" style="color:#8e8e98">#545458</span></td>
+      <td class="arrow">→</td>
+      <td><div class="brd-preview"><div class="brd-inner" style="border:1px solid #6a6a78"></div></div></td>
+      <td><span class="hex" style="color:#e4e4ec">#6a6a78</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Text (shown as labels on --bg-1)</h2>
+<table>
+  <thead><tr><th>Token</th><th colspan="2">Before</th><th></th><th colspan="2">After</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="name">--txt-dim</td>
+      <td><div class="text-preview" style="color:#565660">Muted label</div></td>
+      <td><span class="hex" style="color:#8e8e98">#565660</span></td>
+      <td class="arrow">→</td>
+      <td><div class="text-preview" style="color:#72727e">Muted label</div></td>
+      <td><span class="hex" style="color:#e4e4ec">#72727e</span></td>
+    </tr>
+    <tr>
+      <td class="name">--txt-2</td>
+      <td><div class="text-preview" style="color:#707078">Hint text</div></td>
+      <td><span class="hex" style="color:#8e8e98">#707078</span></td>
+      <td class="arrow">→</td>
+      <td><div class="text-preview" style="color:#8e8e98">Hint text</div></td>
+      <td><span class="hex" style="color:#e4e4ec">#8e8e98</span></td>
+    </tr>
+    <tr>
+      <td class="name">--txt-mid</td>
+      <td><div class="text-preview" style="color:#8a8a90">Mid text</div></td>
+      <td><span class="hex" style="color:#8e8e98">#8a8a90</span></td>
+      <td class="arrow">→</td>
+      <td><div class="text-preview" style="color:#a0a0aa">Mid text</div></td>
+      <td><span class="hex" style="color:#e4e4ec">#a0a0aa</span></td>
+    </tr>
+    <tr>
+      <td class="name">--txt-1</td>
+      <td><div class="text-preview" style="color:#9a9aa0">Body text</div></td>
+      <td><span class="hex" style="color:#8e8e98">#9a9aa0</span></td>
+      <td class="arrow">→</td>
+      <td><div class="text-preview" style="color:#b2b2bc">Body text</div></td>
+      <td><span class="hex" style="color:#e4e4ec">#b2b2bc</span></td>
+    </tr>
+    <tr>
+      <td class="name">--txt-head</td>
+      <td><div class="text-preview" style="color:#b8b8be; font-weight:700">Heading</div></td>
+      <td><span class="hex" style="color:#8e8e98">#b8b8be</span></td>
+      <td class="arrow">→</td>
+      <td><div class="text-preview" style="color:#cacad2; font-weight:700">Heading</div></td>
+      <td><span class="hex" style="color:#e4e4ec">#cacad2</span></td>
+    </tr>
+    <tr>
+      <td class="name">--txt-0</td>
+      <td><div class="text-preview" style="color:#d4d4da; font-weight:600">Primary text</div></td>
+      <td><span class="hex" style="color:#8e8e98">#d4d4da</span></td>
+      <td class="arrow">→</td>
+      <td><div class="text-preview" style="color:#e4e4ec; font-weight:600">Primary text</div></td>
+      <td><span class="hex" style="color:#e4e4ec">#e4e4ec</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Accent</h2>
+<table>
+  <thead><tr><th>Token</th><th colspan="2">Before</th><th></th><th colspan="2">After</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="name">--accent</td>
+      <td><div class="cell"><div class="swatch" style="background:#7878a0"></div><span class="hex" style="color:#8e8e98">#7878a0</span></div></td>
+      <td></td>
+      <td class="arrow">→</td>
+      <td><div class="cell"><div class="swatch" style="background:#8888b8"></div><span class="hex" style="color:#e4e4ec">#8888b8</span></div></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="name">--accent-hi</td>
+      <td><div class="cell"><div class="swatch" style="background:#9090b4"></div><span class="hex" style="color:#8e8e98">#9090b4</span></div></td>
+      <td></td>
+      <td class="arrow">→</td>
+      <td><div class="cell"><div class="swatch" style="background:#a4a4cc"></div><span class="hex" style="color:#e4e4ec">#a4a4cc</span></div></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Purple UI (labels, keybindings, hints)</h2>
+<table>
+  <thead><tr><th>Token</th><th colspan="2">Before</th><th></th><th colspan="2">After</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="name">--purple-dim</td>
+      <td><div class="text-preview" style="color:#4444aa">Hint label</div></td>
+      <td><span class="hex" style="color:#8e8e98">#4444aa</span></td>
+      <td class="arrow">→</td>
+      <td><div class="text-preview" style="color:#5555cc">Hint label</div></td>
+      <td><span class="hex" style="color:#e4e4ec">#5555cc</span></td>
+    </tr>
+    <tr>
+      <td class="name">--purple-mid</td>
+      <td><div class="text-preview" style="color:#6666aa">Reset btn</div></td>
+      <td><span class="hex" style="color:#8e8e98">#6666aa</span></td>
+      <td class="arrow">→</td>
+      <td><div class="text-preview" style="color:#7878cc">Reset btn</div></td>
+      <td><span class="hex" style="color:#e4e4ec">#7878cc</span></td>
+    </tr>
+    <tr>
+      <td class="name">--purple-2</td>
+      <td><div class="text-preview" style="color:#8080aa">KB action</div></td>
+      <td><span class="hex" style="color:#8e8e98">#8080aa</span></td>
+      <td class="arrow">→</td>
+      <td><div class="text-preview" style="color:#9090c8">KB action</div></td>
+      <td><span class="hex" style="color:#e4e4ec">#9090c8</span></td>
+    </tr>
+    <tr>
+      <td class="name">--purple-hi</td>
+      <td><div class="text-preview" style="color:#aaaaee">Close btn</div></td>
+      <td><span class="hex" style="color:#8e8e98">#aaaaee</span></td>
+      <td class="arrow">→</td>
+      <td><div class="text-preview" style="color:#c0c0f4">Close btn</div></td>
+      <td><span class="hex" style="color:#e4e4ec">#c0c0f4</span></td>
+    </tr>
+    <tr>
+      <td class="name">--purple-brd</td>
+      <td><div class="brd-preview"><div class="brd-inner" style="border:1px solid #3a3a5a"></div></div></td>
+      <td><span class="hex" style="color:#8e8e98">#3a3a5a</span></td>
+      <td class="arrow">→</td>
+      <td><div class="brd-preview"><div class="brd-inner" style="border:1px solid #484870"></div></div></td>
+      <td><span class="hex" style="color:#e4e4ec">#484870</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Coloured buttons</h2>
+<table>
+  <thead><tr><th>Token / role</th><th colspan="2">Before</th><th></th><th colspan="2">After</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="name">blue-text</td>
+      <td><div class="text-preview" style="color:#70aadd">CV / Step btn</div></td>
+      <td><span class="hex" style="color:#8e8e98">#70aadd</span></td>
+      <td class="arrow">→</td>
+      <td><div class="text-preview" style="color:#88bbee">CV / Step btn</div></td>
+      <td><span class="hex" style="color:#e4e4ec">#88bbee</span></td>
+    </tr>
+    <tr>
+      <td class="name">teal-text</td>
+      <td><div class="text-preview" style="color:#70cc99">Preset btn</div></td>
+      <td><span class="hex" style="color:#8e8e98">#70cc99</span></td>
+      <td class="arrow">→</td>
+      <td><div class="text-preview" style="color:#80ddaa">Preset btn</div></td>
+      <td><span class="hex" style="color:#e4e4ec">#80ddaa</span></td>
+    </tr>
+    <tr>
+      <td class="name">rec-text</td>
+      <td><div class="text-preview" style="color:#70cc70">⏺ Record</div></td>
+      <td><span class="hex" style="color:#8e8e98">#70cc70</span></td>
+      <td class="arrow">→</td>
+      <td><div class="text-preview" style="color:#80dd80">⏺ Record</div></td>
+      <td><span class="hex" style="color:#e4e4ec">#80dd80</span></td>
+    </tr>
+    <tr>
+      <td class="name">accent-text</td>
+      <td><div class="text-preview" style="color:#d0b0ff">🎮 Play Mode</div></td>
+      <td><span class="hex" style="color:#8e8e98">#d0b0ff</span></td>
+      <td class="arrow">→</td>
+      <td><div class="text-preview" style="color:#ddc0ff">🎮 Play Mode</div></td>
+      <td><span class="hex" style="color:#e4e4ec">#ddc0ff</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Danger</h2>
+<table>
+  <thead><tr><th>Token</th><th colspan="2">Before</th><th></th><th colspan="2">After</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="name">--danger</td>
+      <td><div class="text-preview" style="color:#ff6666">Remove ×</div></td>
+      <td><span class="hex" style="color:#8e8e98">#ff6666</span></td>
+      <td class="arrow">→</td>
+      <td><div class="text-preview" style="color:#ff7777">Remove ×</div></td>
+      <td><span class="hex" style="color:#e4e4ec">#ff7777</span></td>
+    </tr>
+    <tr>
+      <td class="name">--danger-dim</td>
+      <td><div class="text-preview" style="color:#cc7777">Erase row</div></td>
+      <td><span class="hex" style="color:#8e8e98">#cc7777</span></td>
+      <td class="arrow">→</td>
+      <td><div class="text-preview" style="color:#dd8888">Erase row</div></td>
+      <td><span class="hex" style="color:#e4e4ec">#dd8888</span></td>
+    </tr>
+    <tr>
+      <td class="name">--danger-brd</td>
+      <td><div class="brd-preview"><div class="brd-inner" style="border:1px solid #aa4444"></div></div></td>
+      <td><span class="hex" style="color:#8e8e98">#aa4444</span></td>
+      <td class="arrow">→</td>
+      <td><div class="brd-preview"><div class="brd-inner" style="border:1px solid #cc5555"></div></div></td>
+      <td><span class="hex" style="color:#e4e4ec">#cc5555</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Warning</h2>
+<table>
+  <thead><tr><th>Token</th><th colspan="2">Before</th><th></th><th colspan="2">After</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="name">--warn</td>
+      <td><div class="cell"><div class="swatch" style="background:#ff8800"></div><span class="hex" style="color:#8e8e98">#ff8800</span></div></td>
+      <td></td>
+      <td class="arrow">→</td>
+      <td><div class="cell"><div class="swatch" style="background:#ffaa00"></div><span class="hex" style="color:#e4e4ec">#ffaa00</span></div></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="name">--warn-dim</td>
+      <td><div class="text-preview" style="color:#aa7700">Warning hint</div></td>
+      <td><span class="hex" style="color:#8e8e98">#aa7700</span></td>
+      <td class="arrow">→</td>
+      <td><div class="text-preview" style="color:#cc9900">Warning hint</div></td>
+      <td><span class="hex" style="color:#e4e4ec">#cc9900</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Wallkick debug panel text</h2>
+<table>
+  <thead><tr><th>Token</th><th colspan="2">Before</th><th></th><th colspan="2">After</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="name">--wk-text</td>
+      <td><div class="text-preview" style="color:#a0a0cc">Panel body</div></td>
+      <td><span class="hex" style="color:#8e8e98">#a0a0cc</span></td>
+      <td class="arrow">→</td>
+      <td><div class="text-preview" style="color:#b8b8e0">Panel body</div></td>
+      <td><span class="hex" style="color:#e4e4ec">#b8b8e0</span></td>
+    </tr>
+    <tr>
+      <td class="name">--wk-step</td>
+      <td><div class="text-preview" style="color:#6060aa">Step 3 / 12</div></td>
+      <td><span class="hex" style="color:#8e8e98">#6060aa</span></td>
+      <td class="arrow">→</td>
+      <td><div class="text-preview" style="color:#8080cc">Step 3 / 12</div></td>
+      <td><span class="hex" style="color:#e4e4ec">#8080cc</span></td>
+    </tr>
+    <tr>
+      <td class="name">--wk-dim-text</td>
+      <td><div class="text-preview" style="color:#555588">gray tag</div></td>
+      <td><span class="hex" style="color:#8e8e98">#555588</span></td>
+      <td class="arrow">→</td>
+      <td><div class="text-preview" style="color:#7070aa">gray tag</div></td>
+      <td><span class="hex" style="color:#e4e4ec">#7070aa</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Full ramp: all text levels in context</h2>
+<div style="background:#202024; border-radius:6px; padding:16px 20px; max-width:400px; border:1px solid #3c3c42; margin-top:4px;">
+  <div style="font-size:10px; font-weight:700; letter-spacing:0.1em; color:#72727e; margin-bottom:10px;">SECTION LABEL (txt-dim)</div>
+  <div style="color:#8e8e98; font-size:11px; margin-bottom:4px;">Hint / secondary info (txt-2)</div>
+  <div style="color:#a0a0aa; font-size:12px; margin-bottom:4px;">Mid-weight label (txt-mid)</div>
+  <div style="color:#b2b2bc; font-size:13px; margin-bottom:4px;">Body text content (txt-1)</div>
+  <div style="color:#cacad2; font-size:14px; font-weight:600; margin-bottom:6px;">Heading text (txt-head)</div>
+  <div style="color:#e4e4ec; font-size:13px; font-weight:500;">Primary / interactive text (txt-0)</div>
+  <div style="margin-top:12px; border:1px solid #3c3c42; border-radius:3px; padding:5px 8px; color:#e4e4ec; font-size:12px;">Input field with brd-1 border</div>
+  <div style="margin-top:6px; border:1px solid #545460; border-radius:3px; padding:5px 8px; color:#e4e4ec; font-size:12px;">Focused input with brd-2 border</div>
+  <div style="margin-top:6px; border:1px solid #6a6a78; border-radius:3px; padding:5px 8px; color:#e4e4ec; font-size:12px; outline:1px solid #8888b8;">Active/accent outline (brd-3 + accent)</div>
+</div>
+
+</body>
+</html>

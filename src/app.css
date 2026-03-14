@@ -1,0 +1,421 @@
+/* ─────────────────────────────────────────────────────────────
+   Tedige design tokens — imported by main.ts & player-main.ts
+   ───────────────────────────────────────────────────────────── */
+:root {
+  /* ── Backgrounds (dark → light) ── */
+  --bg-base:   #0e0e10;   /* page / board area */
+  --bg-deep:   #141416;   /* panel wells, code blocks */
+  --bg-input:  #1a1a1d;   /* text inputs, textareas */
+  --bg-1:      #202024;   /* sidebars, toolbars, button resting */
+  --bg-2:      #2a2a2e;   /* button hover, interactive elements */
+  --bg-3:      #343438;   /* selected / active state */
+
+  /* ── Borders ── */
+  --brd-1:     #3c3c42;   /* standard border */
+  --brd-2:     #545460;   /* prominent border */
+  --brd-3:     #6a6a78;   /* focused / highlighted border */
+
+  /* ── Text ── */
+  --txt-dim:   #72727e;   /* muted labels, section headers */
+  --txt-2:     #8e8e98;   /* secondary / hint text */
+  --txt-mid:   #a0a0aa;   /* mid-weight text */
+  --txt-1:     #b2b2bc;   /* body text */
+  --txt-head:  #cacad2;   /* headings */
+  --txt-0:     #e4e4ec;   /* primary / interactive text */
+
+  /* ── Accent (cool blue-gray) ── */
+  --accent:    #8888b8;   /* sliders, progress bars, checkboxes */
+  --accent-hi: #a4a4cc;   /* hover accent */
+
+  /* ── Semantic colours ── */
+  --clr-green:    #44cc88;
+  --clr-red:      #ff4444;
+  --clr-yellow:   #ffdd44;
+  --clr-cyan:     #44ffdd;
+  --clr-magenta:  #ff88ff;
+
+  /* ── Error state ── */
+  --err-bg:    #2a1010;
+  --err-brd:   #6a2020;
+  --err-txt:   #ff8080;
+
+  /* ── Border radii ── */
+  --r-sm:   3px;
+  --r:      4px;
+  --r-lg:   8px;
+
+  /* ── Purple UI (keybindings, hints, labels) ── */
+  --purple-dim:         #5555cc;  /* muted purple labels / keybinding hints */
+  --purple-mid:         #7878cc;  /* mid-weight purple text / buttons */
+  --purple-2:           #9090c8;  /* secondary purple text */
+  --purple-hover:       #b4b4f4;  /* hover color for direction buttons */
+  --purple-hi:          #c0c0f4;  /* light purple (close buttons, dialogs) */
+  --purple-brd:         #484870;  /* subtle purple border */
+  --purple-brd-hi:      #7878e0;  /* hover purple border */
+
+  /* ── Accent buttons (purple call-to-action) ── */
+  --accent-bg:          #3a2a6a;
+  --accent-brd:         #7a5abb;
+  --accent-text:        #ddc0ff;
+  --accent-bg-hi:       #4a3a7a;
+
+  /* ── Blue action buttons (step / CV / player) ── */
+  --blue-bg:            #1a2a3a;
+  --blue-brd:           #3a5a7a;
+  --blue-text:          #88bbee;
+  --blue-bg-hi:         #223344;
+  --blue-step:          #70a0dd;  /* lock-delay step button text */
+  --blue-step-hi:       #a0d0ff;  /* lock-delay step button hover text */
+  --blue-brd-hi:        #5a8abb;  /* lock-delay step button hover border */
+
+  /* ── Indigo buttons (import / external link) ── */
+  --indigo-bg:          #1a2a5a;
+  --indigo-brd:         #4a6abb;
+  --indigo-text:        #90bbff;
+  --indigo-bg-hi:       #22336a;
+
+  /* ── Teal buttons (capture preset / new-frame) ── */
+  --teal-bg:            #1a3a2a;
+  --teal-brd:           #4a8a6a;
+  --teal-text:          #80ddaa;
+  --teal-bg-hi:         #22503a;
+  --teal-brd-hi:        #6abb90;
+  --teal-text-hi:       #aaeecc;
+
+  /* ── Recording button (start recording, green) ── */
+  --rec-bg:             #1a2a1a;
+  --rec-brd:            #4a7a4a;
+  --rec-text:           #80dd80;
+  --rec-bg-hi:          #223a22;
+  --rec-brd-hi:         #6abb6a;
+  --rec-text-hi:        #aaeeaa;
+
+  /* ── Saved layout buttons (muted olive-green) ── */
+  --saved-brd:          #4a5a3a;
+  --saved-text:         #99bb99;
+  --saved-brd-hi:       #6a8a6a;
+  --saved-bg-hi:        #1a2a1a;
+  --saved-text-hi:      #bbeeaa;
+  --saved-bg-act:       #1e2e1e;
+  --saved-brd-act:      #6a9a6a;
+
+  /* ── OK / success green ── */
+  --ok-bg:              #0a2a14;
+  --ok-bg-sub:          #0e1a0e;
+  --ok-brd:             #2a4a2a;
+  --ok:                 #00cc55;
+  --ok-hi:              #00ff77;
+
+  /* ── Danger / destructive ── */
+  --danger-bg:          #2a1a1a;
+  --danger-bg-deep:     #2a0a0a;
+  --danger-brd-dim:     #503030;
+  --danger-brd-mid:     #aa5555;
+  --danger-brd:         #cc5555;
+  --danger-brd-hi:      #ee5555;
+  --danger-dim:         #dd8888;
+  --danger:             #ff7777;
+  --danger-hi:          #ffaaaa;
+  --rec-dot:            #dd3333;  /* recording indicator dot */
+  --rec-dot-check:      #ee4444;  /* recording checkbox accent */
+  --rec-dot-text:       #ee9999;  /* recording active label */
+  --stop-brd:           #5a3333;  /* stop recording button border */
+  --stop-text:          #cc8080;  /* stop recording button text */
+
+  /* ── Magenta / input toggle ── */
+  --magenta-bg:         #3a1a3a;
+  --magenta-brd:        #aa44aa;
+
+  /* ── Warning / orange ── */
+  --warn-bg:            #2a1400;
+  --warn:               #ffaa00;
+  --warn-dim:           #cc9900;
+
+  /* ── Brown (raise hole selector) ── */
+  --brown-bg:           #5a4433;
+  --brown-brd:          #3a2a1a;
+  --brown:              #7a6050;
+
+  /* ── Wallkick debug visualization ── */
+  --wk-bg:              #1e1e3e;
+  --wk-text:            #b8b8e0;
+  --wk-dim:             #5555aa;
+  --wk-step:            #8080cc;
+  --wk-dim-text:        #7070aa;
+  --wk-original:        #4488ff;
+  --wk-test:            #ffe060;
+  --wk-kick:            #00ccff;
+
+  /* ── Input display hold state (amber) ── */
+  --input-on-bg:        #7a4400;
+  --input-on-brd:       #dd9900;
+  --input-on-clr:       #ffdd55;
+
+  /* ── Misc UI ── */
+  --advance-clr:        #66ffaa;  /* FrameTimeline advance action */
+  --slot-empty:         #4a4a52;  /* empty piece slot indicator dot */
+  --hold-active-bg:     #2a2a1a;  /* hold-piece slot active background */
+}
+
+/* ── Apply CSS vars to body background ──────────────────────────────────────── */
+html, body {
+  background: var(--bg-base);
+  color: var(--txt-0);
+}
+
+/* ── Light theme ──────────────────────────────────────────────────────────────
+   Applied when data-theme="light" is set on <html>.
+   ─────────────────────────────────────────────────────────────────────────── */
+[data-theme="light"] {
+  /* ── Backgrounds ── */
+  --bg-base:   #f0f0f4;
+  --bg-deep:   #e8e8ec;
+  --bg-input:  #dcdce2;
+  --bg-1:      #d0d0d6;
+  --bg-2:      #c4c4ca;
+  --bg-3:      #b8b8be;
+
+  /* ── Borders ── */
+  --brd-1:     #acacb4;
+  --brd-2:     #9090a0;
+  --brd-3:     #747488;
+
+  /* ── Text ── */
+  --txt-dim:   #686870;
+  --txt-2:     #505058;
+  --txt-mid:   #3c3c44;
+  --txt-1:     #28282e;
+  --txt-head:  #18181e;
+  --txt-0:     #0c0c12;
+
+  /* ── Accent ── */
+  --accent:    #6060a0;
+  --accent-hi: #5050a0;
+
+  /* ── Semantic colours ── */
+  --clr-green:   #198a50;
+  --clr-red:     #cc2222;
+  --clr-yellow:  #aa7700;
+  --clr-cyan:    #009999;
+  --clr-magenta: #aa33aa;
+
+  /* ── Error state ── */
+  --err-bg:    #fff0f0;
+  --err-brd:   #ffaaaa;
+  --err-txt:   #cc2222;
+
+  /* ── Purple UI ── */
+  --purple-dim:    #7070cc;
+  --purple-mid:    #5858c0;
+  --purple-2:      #6868b8;
+  --purple-hover:  #4040c8;
+  --purple-hi:     #3030b8;
+  --purple-brd:    #9090cc;
+  --purple-brd-hi: #5858d8;
+
+  /* ── Accent buttons ── */
+  --accent-bg:     #e8e4f8;
+  --accent-brd:    #9070cc;
+  --accent-text:   #4020a0;
+  --accent-bg-hi:  #ddd8f4;
+
+  /* ── Blue action buttons ── */
+  --blue-bg:      #e0eaf8;
+  --blue-brd:     #5088c0;
+  --blue-text:    #1848a0;
+  --blue-bg-hi:   #d4e4f4;
+  --blue-step:    #1c58c0;
+  --blue-step-hi: #1040a8;
+  --blue-brd-hi:  #3870b0;
+
+  /* ── Indigo buttons ── */
+  --indigo-bg:    #e4e8f8;
+  --indigo-brd:   #5878cc;
+  --indigo-text:  #1840a8;
+  --indigo-bg-hi: #d8e0f4;
+
+  /* ── Teal buttons ── */
+  --teal-bg:      #e0f4ec;
+  --teal-brd:     #3a9068;
+  --teal-text:    #0e5838;
+  --teal-bg-hi:   #d4ece4;
+  --teal-brd-hi:  #2a7858;
+  --teal-text-hi: #084028;
+
+  /* ── Recording button ── */
+  --rec-bg:      #e4f4e4;
+  --rec-brd:     #3a8a3a;
+  --rec-text:    #0e480e;
+  --rec-bg-hi:   #d4ecd4;
+  --rec-brd-hi:  #2a7030;
+  --rec-text-hi: #083808;
+
+  /* ── Saved layout buttons ── */
+  --saved-brd:     #6a8050;
+  --saved-text:    #3a5020;
+  --saved-brd-hi:  #507060;
+  --saved-bg-hi:   #e0ece0;
+  --saved-text-hi: #284018;
+  --saved-bg-act:  #d8e8d8;
+  --saved-brd-act: #408850;
+
+  /* ── OK / success ── */
+  --ok-bg:     #eef8f2;
+  --ok-bg-sub: #f4fcf8;
+  --ok-brd:    #70c898;
+  --ok:        #00994d;
+  --ok-hi:     #007733;
+
+  /* ── Danger ── */
+  --danger-bg:       #fce8e8;
+  --danger-bg-deep:  #fad4d4;
+  --danger-brd-dim:  #e8aaaa;
+  --danger-brd-mid:  #cc5555;
+  --danger-brd:      #cc3333;
+  --danger-brd-hi:   #ee1111;
+  --danger-dim:      #cc4444;
+  --danger:          #bb1111;
+  --danger-hi:       #990000;
+  --rec-dot:         #cc1111;
+  --rec-dot-check:   #dd2222;
+  --rec-dot-text:    #cc4444;
+  --stop-brd:        #cc7777;
+  --stop-text:       #aa3333;
+
+  /* ── Magenta ── */
+  --magenta-bg:  #f4e4f4;
+  --magenta-brd: #aa44aa;
+
+  /* ── Warning ── */
+  --warn-bg:  #fff8e8;
+  --warn:     #cc7700;
+  --warn-dim: #aa6000;
+
+  /* ── Brown ── */
+  --brown-bg:  #ece0d8;
+  --brown-brd: #c0a898;
+  --brown:     #9a7060;
+
+  /* ── Wallkick debug ── */
+  --wk-bg:       #eeeefc;
+  --wk-text:     #2e2e68;
+  --wk-dim:      #9090cc;
+  --wk-step:     #6060c0;
+  --wk-dim-text: #8888b8;
+  --wk-original: #1155ee;
+  --wk-test:     #997700;
+  --wk-kick:     #0088bb;
+
+  /* ── Input display hold ── */
+  --input-on-bg:  #fff8d8;
+  --input-on-brd: #cc9900;
+  --input-on-clr: #886600;
+
+  /* ── Misc UI ── */
+  --advance-clr:    #008844;
+  --slot-empty:     #a8a8b0;
+  --hold-active-bg: #f0f0dc;
+}
+
+/* ── Touch / coarse-pointer sizing ────────────────────────────────────────────
+   Applied on any device where the primary pointer is coarse (finger, stylus).
+   Targets: all buttons, inputs, checkboxes, range thumbs, and the d-pad.
+   The rule bumps minimum tap targets to 44px (Apple HIG / WCAG 2.5.5).
+   ─────────────────────────────────────────────────────────────────────────── */
+@media (pointer: coarse) {
+  /* Generic buttons */
+  button {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  /* Topbar buttons */
+  .btn {
+    min-height: 44px;
+    padding: 8px 14px;
+  }
+
+  /* Toolbar tool buttons */
+  .tool-btn {
+    min-height: 44px;
+    padding: 6px 8px;
+  }
+
+  /* Undo/redo history buttons */
+  .hist-btn {
+    min-height: 44px;
+  }
+
+  /* D-pad buttons */
+  .dpad-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+  }
+
+  /* Rotate / clear piece buttons */
+  .rot-btn {
+    min-height: 44px;
+    padding: 6px;
+  }
+
+  /* Lock + Step buttons */
+  .lock-btn,
+  .ld-step-btn {
+    min-height: 44px;
+  }
+
+  /* Piece selector swatches */
+  .piece-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Frame timeline action buttons */
+  .timeline-btn,
+  .frame-action-btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Mobile tab bar */
+  .mobile-tab {
+    min-height: 44px;
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+
+  /* Stack-operations buttons */
+  .lc-btn {
+    min-height: 44px;
+    padding: 8px 6px;
+  }
+
+  /* Checkboxes */
+  .piece-check input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Range slider thumb — larger grab area */
+  input[type="range"] {
+    height: 24px;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    width: 24px;
+    height: 24px;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* Number inputs — wider for thumb typing */
+  input[type="number"] {
+    min-height: 36px;
+    min-width: 48px;
+    font-size: 13px;
+  }
+}

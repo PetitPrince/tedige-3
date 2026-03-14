@@ -1,0 +1,145 @@
+{
+  "TGM1": {
+    "gravity": [
+      { "level": 0, "gravity": 4 },
+      { "level": 30, "gravity": 6 },
+      { "level": 35, "gravity": 8 },
+      { "level": 40, "gravity": 10 },
+      { "level": 50, "gravity": 12 },
+      { "level": 60, "gravity": 16 },
+      { "level": 70, "gravity": 32 },
+      { "level": 80, "gravity": 48 },
+      { "level": 90, "gravity": 64 },
+      { "level": 100, "gravity": 80 },
+      { "level": 120, "gravity": 96 },
+      { "level": 140, "gravity": 112 },
+      { "level": 160, "gravity": 128 },
+      { "level": 170, "gravity": 144 },
+      { "level": 200, "gravity": 4 },
+      { "level": 220, "gravity": 32 },
+      { "level": 230, "gravity": 64 },
+      { "level": 233, "gravity": 96 },
+      { "level": 236, "gravity": 128 },
+      { "level": 239, "gravity": 160 },
+      { "level": 243, "gravity": 192 },
+      { "level": 247, "gravity": 224 },
+      { "level": 251, "gravity": 256 },
+      { "level": 300, "gravity": 512 },
+      { "level": 330, "gravity": 768 },
+      { "level": 360, "gravity": 1024 },
+      { "level": 400, "gravity": 1280 },
+      { "level": 420, "gravity": 1024 },
+      { "level": 450, "gravity": 768 },
+      { "level": 500, "gravity": 5120 }
+    ],
+    "delays": [
+      {
+        "levelRange": "000-999",
+        "are": 30,
+        "das": 16,
+        "lock": 30,
+        "lineClear": 41
+      }
+    ]
+  },
+
+  "TAP": {
+    "Normal": {
+      "gravity": [
+        { "level": 0, "gravity": 4 },
+        { "level": 8, "gravity": 5 },
+        { "level": 19, "gravity": 6 },
+        { "level": 35, "gravity": 8 },
+        { "level": 40, "gravity": 10 },
+        { "level": 50, "gravity": 12 },
+        { "level": 60, "gravity": 16 },
+        { "level": 70, "gravity": 32 },
+        { "level": 80, "gravity": 48 },
+        { "level": 90, "gravity": 64 },
+        { "level": 100, "gravity": 4 },
+        { "level": 108, "gravity": 5 },
+        { "level": 119, "gravity": 6 },
+        { "level": 125, "gravity": 8 },
+        { "level": 131, "gravity": 12 },
+        { "level": 139, "gravity": 32 },
+        { "level": 149, "gravity": 48 },
+        { "level": 156, "gravity": 80 },
+        { "level": 164, "gravity": 112 },
+        { "level": 174, "gravity": 128 },
+        { "level": 180, "gravity": 144 },
+        { "level": 200, "gravity": 16 },
+        { "level": 212, "gravity": 48 },
+        { "level": 221, "gravity": 80 },
+        { "level": 232, "gravity": 112 },
+        { "level": 244, "gravity": 144 },
+        { "level": 256, "gravity": 176 },
+        { "level": 267, "gravity": 192 },
+        { "level": 277, "gravity": 208 },
+        { "level": 287, "gravity": 224 },
+        { "level": 295, "gravity": 240 },
+        { "level": 300, "gravity": 5120 }
+      ],
+      "delays": [
+        {
+          "levelRange": "000-300",
+          "are": 27,
+          "das": 16,
+          "lock": 30,
+          "lineClear": 40
+        }
+      ]
+    },
+
+    "Master": {
+      "gravity": "same as TGM1",
+      "delays": [
+        { "levelRange": "000-499", "are": 27, "lineARE": 27, "das": 16, "lock": 30, "lineClear": 40 },
+        { "levelRange": "500-600", "are": 27, "lineARE": 27, "das": 10, "lock": 30, "lineClear": 25 },
+        { "levelRange": "601-700", "are": 27, "lineARE": 18, "das": 10, "lock": 30, "lineClear": 16 },
+        { "levelRange": "701-800", "are": 18, "lineARE": 14, "das": 10, "lock": 30, "lineClear": 12 },
+        { "levelRange": "801-900", "are": 14, "lineARE": 8, "das": 10, "lock": 30, "lineClear": 6 },
+        { "levelRange": "901-999", "are": 14, "lineARE": 8, "das": 8, "lock": 17, "lineClear": 6 }
+      ]
+    },
+
+    "Death": {
+      "delays": [
+        { "levelRange": "000-099", "are": 18, "lineARE": 14, "das": 12, "lock": 30, "lineClear": 12 },
+        { "levelRange": "100-199", "are": 14, "lineARE": 8, "das": 12, "lock": 26, "lineClear": 6 },
+        { "levelRange": "200-299", "are": 14, "lineARE": 8, "das": 11, "lock": 22, "lineClear": 6 },
+        { "levelRange": "300-399", "are": 8, "lineARE": 8, "das": 10, "lock": 18, "lineClear": 6 },
+        { "levelRange": "400-499", "are": 7, "lineARE": 7, "das": 8, "lock": 15, "lineClear": 5 },
+        { "levelRange": "500-999", "are": 6, "lineARE": 6, "das": 8, "lock": 15, "lineClear": 4 }
+      ]
+    }
+  },
+
+  "TGM3": {
+    "gravity": "same as TAP Master",
+    "delays": [
+      { "levelRange": "000-499", "are": 27, "lineARE": 27, "das": 16, "lock": 30, "lineClear": 40 },
+      { "levelRange": "500-599", "are": 27, "lineARE": 27, "das": 10, "lock": 30, "lineClear": 25 },
+      { "levelRange": "600-699", "are": 27, "lineARE": 18, "das": 10, "lock": 30, "lineClear": 16 },
+      { "levelRange": "700-799", "are": 18, "lineARE": 14, "das": 10, "lock": 30, "lineClear": 12 },
+      { "levelRange": "800-899", "are": 14, "lineARE": 8, "das": 10, "lock": 30, "lineClear": 6 },
+      { "levelRange": "900-999", "are": 14, "lineARE": 8, "das": 8, "lock": 17, "lineClear": 6 },
+      { "levelRange": "1000-1099", "are": 8, "lineARE": 8, "das": 8, "lock": 17, "lineClear": 6 },
+      { "levelRange": "1100-1199", "are": 7, "lineARE": 7, "das": 8, "lock": 15, "lineClear": 6 },
+      { "levelRange": "1200+", "are": 6, "lineARE": 6, "das": 8, "lock": 15, "lineClear": 6 }
+    ],
+
+    "Shirase": {
+      "delays": [
+        { "levelRange": "000-099", "are": 12, "lineARE": 8, "das": 10, "lock": 18, "lineClear": 6 },
+        { "levelRange": "100-199", "are": 12, "lineARE": 7, "das": 8, "lock": 18, "lineClear": 5 },
+        { "levelRange": "200-299", "are": 12, "lineARE": 6, "das": 8, "lock": 17, "lineClear": 4 },
+        { "levelRange": "300-499", "are": 6, "lineARE": 6, "das": 8, "lock": 15, "lineClear": 4 },
+        { "levelRange": "500-599", "are": 6, "lineARE": 5, "das": 6, "lock": 13, "lineClear": 3 },
+        { "levelRange": "600-1099", "are": 6, "lineARE": 5, "das": 6, "lock": 12, "lineClear": 3 },
+        { "levelRange": "1100-1199", "are": 6, "lineARE": 5, "das": 6, "lock": 10, "lineClear": 3 },
+        { "levelRange": "1200-1299", "are": 6, "lineARE": 5, "das": 6, "lock": 8, "lineClear": 3 },
+        { "levelRange": "1300", "are": 6, "lineARE": 6, "das": 6, "lock": 15, "lineClear": 6 }
+      ]
+    }
+  }
+}

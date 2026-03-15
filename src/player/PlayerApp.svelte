@@ -13,6 +13,7 @@
   let config: RenderConfig = { ...DEFAULT_RENDER_CONFIG };
   let autoplay = false;
   let editorUrl = '/';
+  let nextQueueLayout: 'horizontal' | 'vertical' = 'horizontal';
 
   onMount(() => {
     const hash   = window.location.hash.slice(1); // strip leading '#'
@@ -22,6 +23,7 @@
     const encoded = hash.startsWith('v') ? hash : (params.get('d') ?? hash);
     const skinParam = params.get('skin');
     autoplay = params.has('autoplay');
+    nextQueueLayout = (localStorage.getItem('tedige-nq-layout') ?? 'horizontal') as 'horizontal' | 'vertical';
 
     // Build "edit" link back to the editor
     editorUrl = '/' + (hash ? '#' + hash : '');
@@ -68,7 +70,7 @@
 
 <div class="page">
   {#if diagram}
-    <PlayerView {diagram} {config} {autoplay} />
+    <PlayerView {diagram} {config} {autoplay} {nextQueueLayout} />
     <a class="edit-link" href={editorUrl}>✏ Edit in Tedige</a>
   {:else if error}
     <div class="error-box">

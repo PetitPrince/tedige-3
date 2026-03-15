@@ -10,7 +10,9 @@
     drawCallouts,
     drawCommentOverlay,
     renderPiecePreview,
+    drawCell,
   } from '../renderer/board-renderer';
+  import { pieceTypeToCellType } from '../renderer/colors';
   import { getRotationSystem } from '../rotation/index';
   import { BOARD_COLS, BOARD_ROWS, cloneBoard, setCell, CellType } from '../types/board';
   import type { Board } from '../types/board';
@@ -18,6 +20,7 @@
   export let diagram: Diagram;
   export let config: RenderConfig = { ...DEFAULT_RENDER_CONFIG };
   export let autoplay = false;
+  export let nextQueueLayout: 'horizontal' | 'vertical' = 'horizontal';
 
   // ── State ──────────────────────────────────────────────────────────────────
   let currentIndex = 0;
@@ -57,6 +60,8 @@
   $: frame   = frames[Math.min(currentIndex, total - 1)];
   $: cellSize      = config.cellSize;
   $: pcs     = Math.max(6, Math.floor(cellSize * 0.65));
+  $: sm_v    = Math.max(6, Math.floor(cellSize / 2));
+  $: slotH_v = 3 * sm_v;
   $: delay   = Math.max(50, diagram.animationDelayMs / speedMultiplier);
 
   // Compact mode: hide side panels, frame dots, and non-essential controls.
@@ -194,27 +199,156 @@
     }
   }
 
+  // Mirrors NextQueue.svelte constants
+  const STRIP_ROWS = 3;
+  const SECOND_START_COLS = 7;
+
   function drawNext() {
     if (!nextCanvas || !frame) return;
     const ctx = nextCanvas.getContext('2d');
     if (!ctx) return;
-    const count = Math.min(frame.nextQueue.length, 5);
-    // Canvas matches the board width; piece preview is offset to center it in 10 cols.
-    const xOff = Math.round((BOARD_COLS - 4) / 2) * cellSize;
-    nextCanvas.width  = BOARD_COLS * cellSize;
-    nextCanvas.height = Math.max(1, count * 2 * cellSize);
-    ctx.fillStyle = config.skin.backgroundColor;
-    ctx.fillRect(0, 0, nextCanvas.width, nextCanvas.height);
-    for (let i = 0; i < count; i++) {
-      // piece 0 (next to play) at the bottom — closest to the board top
-      renderPiecePreview(ctx, xOff, (count - 1 - i) * 2 * cellSize, frame.nextQueue[i], rotSys, cellSize, 4, 2, false, config.skin);
+    const queue = frame.nextQueue.slice(0, 6);
+    const skin  = config.skin;
+
+    if (nextQueueLayout === 'vertical') {
+      // Vertical: narrow column to the right of the board, pieces top→bottom
+      const count = queue.length;
+      nextCanvas.width  = 5 * sm_v;
+      nextCanvas.height = Math.max(1, count * slotH_v);
+      ctx.fillStyle = skin.previewBackgroundColor;
+      ctx.fillRect(0, 0, nextCanvas.width, nextCanvas.height);
+
+      const zoneLabelSize = Math.max(7, Math.round(sm_v * 0.5));
+      ctx.font = `700 ${zoneLabelSize}px system-ui, sans-serif`;
+      ctx.textBaseline = 'top';
+      const zoneStroke = 'rgba(120,120,140,0.25)';
+      const zoneLabelColor = 'rgba(160,160,180,0.55)';
+
+      for (let i = 0; i < count; i++) {
+        const zy = i * slotH_v;
+        ctx.strokeStyle = zoneStroke;
+        ctx.lineWidth = 1;
+        ctx.strokeRect(0.5, zy + 0.5, nextCanvas.width - 1, slotH_v - 1);
+        ctx.fillStyle = zoneLabelColor;
+        ctx.textAlign = 'left';
+        ctx.fillText(i === 0 ? 'NEXT' : String(i + 1), 3, zy + 2);
+
+        const type  = queue[i];
+        const shape = rotSys.getShape(type, 0);
+        const cellType = pieceTypeToCellType(type);
+        const minDC = Math.min(...shape.map(m => m.deltaCol));
+        const maxDC = Math.max(...shape.map(m => m.deltaCol));
+        const minDR = Math.min(...shape.map(m => m.deltaRow));
+        const maxDR = Math.max(...shape.map(m => m.deltaRow));
+        const bboxW = maxDC - minDC + 1;
+        const bboxH = maxDR - minDR + 1;
+        const xOff  = Math.floor((5 - bboxW) / 2) * sm_v;
+        const yOff  = Math.floor((3 - bboxH) / 2) * sm_v;
+        for (const { deltaCol, deltaRow } of shape) {
+          drawCell(ctx, xOff + (deltaCol - minDC) * sm_v, zy + yOff + (deltaRow - minDR) * sm_v, cellType, sm_v, skin);
+        }
+      }
+    } else {
+      // Horizontal: matches editor NextQueue.svelte layout exactly.
+      // First piece at full cellSize on the left; pieces 2–6 at sm size in a 2×3 grid on the right.
+      const sm = Math.max(5, Math.floor(cellSize / 4));
+      const W  = BOARD_COLS * cellSize;
+      const H  = STRIP_ROWS * cellSize;
+      nextCanvas.width  = W;
+      nextCanvas.height = H;
+      ctx.fillStyle = skin.previewBackgroundColor;
+      ctx.fillRect(0, 0, W, H);
+
+      const secondX     = SECOND_START_COLS * cellSize;
+      const slotW       = 4 * sm;
+      const halfH       = H / 2;
+      const firstZoneLeft = Math.floor((BOARD_COLS - 4) / 2) * cellSize;
+
+      // Zone outlines + labels
+      const zoneLabelSize  = Math.max(8, Math.round(sm * 0.85));
+      const zoneStroke     = 'rgba(120,120,140,0.25)';
+      const zoneLabelColor = 'rgba(160,160,180,0.55)';
+      ctx.font = `700 ${zoneLabelSize}px system-ui, sans-serif`;
+      ctx.textBaseline = 'top';
+
+      // First slot zone
+      ctx.strokeStyle = zoneStroke;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(firstZoneLeft + 0.5, 0.5, secondX - firstZoneLeft - 1, H - 1);
+      ctx.fillStyle = zoneLabelColor;
+      ctx.textAlign = 'left';
+      ctx.fillText('NEXT', firstZoneLeft + 3, 2);
+
+      // Secondary zones: bottom row (slots 1,2), top row (slots 3,4,5)
+      for (let col = 0; col < 2; col++) {
+        const slot = 1 + col;
+        if (slot >= queue.length) break;
+        const zx = secondX + col * slotW;
+        ctx.strokeStyle = zoneStroke;
+        ctx.lineWidth = 1;
+        ctx.strokeRect(zx + 0.5, halfH + 0.5, slotW - 1, halfH - 1);
+        ctx.fillStyle = zoneLabelColor;
+        ctx.textAlign = 'left';
+        ctx.fillText(String(slot + 1), zx + 3, halfH + 2);
+      }
+      for (let col = 0; col < 3; col++) {
+        const slot = 3 + col;
+        if (slot >= queue.length) break;
+        const zx = secondX + col * slotW;
+        ctx.strokeStyle = zoneStroke;
+        ctx.lineWidth = 1;
+        ctx.strokeRect(zx + 0.5, 0.5, slotW - 1, halfH - 1);
+        ctx.fillStyle = zoneLabelColor;
+        ctx.textAlign = 'left';
+        ctx.fillText(String(slot + 1), zx + 3, 2);
+      }
+
+      if (queue.length === 0) return;
+
+      // First piece at full cellSize, centered horizontally, bottom-aligned
+      const firstShape = rotSys.getShape(queue[0], 0);
+      const firstMinDC = Math.min(...firstShape.map(m => m.deltaCol));
+      const firstMinDR = Math.min(...firstShape.map(m => m.deltaRow));
+      const firstMaxDC = Math.max(...firstShape.map(m => m.deltaCol));
+      const firstMaxDR = Math.max(...firstShape.map(m => m.deltaRow));
+      const firstBboxW = firstMaxDC - firstMinDC + 1;
+      const firstBboxH = firstMaxDR - firstMinDR + 1;
+      const firstXOff  = Math.floor((BOARD_COLS - firstBboxW) / 2) * cellSize;
+      const firstYOff  = (STRIP_ROWS - firstBboxH) * cellSize;
+      const firstCellType = pieceTypeToCellType(queue[0]);
+      for (const { deltaCol, deltaRow } of firstShape) {
+        drawCell(ctx, firstXOff + (deltaCol - firstMinDC) * cellSize, firstYOff + (deltaRow - firstMinDR) * cellSize, firstCellType, cellSize, skin);
+      }
+
+      // Pieces 2–6: smaller size, 2-row grid
+      for (let i = 1; i < queue.length; i++) {
+        const slotIsBottom = i <= 2;
+        const slotCol = slotIsBottom ? i - 1 : i - 3;
+        const x = secondX + slotCol * slotW;
+        const y = slotIsBottom ? halfH : 0;
+
+        const type  = queue[i];
+        const shape = rotSys.getShape(type, 0);
+        const cellType = pieceTypeToCellType(type);
+        const minDC = Math.min(...shape.map(m => m.deltaCol));
+        const maxDC = Math.max(...shape.map(m => m.deltaCol));
+        const minDR = Math.min(...shape.map(m => m.deltaRow));
+        const maxDR = Math.max(...shape.map(m => m.deltaRow));
+        const bboxW = maxDC - minDC + 1;
+        const bboxH = maxDR - minDR + 1;
+        const xOff  = Math.floor((4 - bboxW) / 2) * sm;
+        const yOff  = Math.floor((halfH / sm - bboxH) / 2) * sm;
+        for (const { deltaCol, deltaRow } of shape) {
+          drawCell(ctx, x + xOff + (deltaCol - minDC) * sm, y + yOff + (deltaRow - minDR) * sm, cellType, sm, skin);
+        }
+      }
     }
   }
 
   // Redraw when frame or size-related config changes
   $: { void cellSize;  void frame; if (boardCanvas) drawBoard(); }
   $: { void pcs; void frame; if (holdCanvas)  drawHold();  }
-  $: { void cellSize;  void frame; if (nextCanvas)  drawNext();  }
+  $: { void cellSize; void frame; void nextQueueLayout; void sm_v; if (nextCanvas) drawNext(); }
 
   // ── Playback timer ─────────────────────────────────────────────────────────
   /**
@@ -308,11 +442,17 @@
     {/if}
 
     <div class="main-col">
-      {#if !compact}
+      {#if !compact && nextQueueLayout === 'horizontal'}
         <canvas bind:this={nextCanvas} class="next-canvas"></canvas>
       {/if}
       <canvas bind:this={boardCanvas} class="board-canvas"></canvas>
     </div>
+
+    {#if !compact && nextQueueLayout === 'vertical'}
+      <div class="next-col-v">
+        <canvas bind:this={nextCanvas} class="next-canvas-v"></canvas>
+      </div>
+    {/if}
   </div>
 
   <div class="input-display-wrap" style="width: {BOARD_COLS * cellSize}px">
@@ -418,9 +558,17 @@
     gap: 0;
   }
 
-  .side-canvas  { display: block; background: var(--bg-base); }
-  .next-canvas  { display: block; }
-  .board-canvas { display: block; }
+  .side-canvas    { display: block; background: var(--bg-base); }
+  .next-canvas    { display: block; }
+  .board-canvas   { display: block; }
+
+  .next-col-v {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    align-self: flex-start;
+  }
+  .next-canvas-v  { display: block; }
 
   .side-label {
     font-size: 9px;

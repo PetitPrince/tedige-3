@@ -24,6 +24,7 @@ export function cloneFrame(frame: Frame, clean = false): Frame {
       inputs: frame.inputs ? { ...frame.inputs } : undefined,
       overlays: frame.overlays ? frame.overlays.map(o => ({ ...o })) : undefined,
       lockFlash: frame.lockFlash,
+      durationMs: frame.durationMs,
     }),
   };
 }

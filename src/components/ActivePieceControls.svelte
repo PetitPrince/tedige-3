@@ -242,16 +242,16 @@
    * @param {number} level - The current level.
    * @returns {{ gravFrames: number; ldFrames: number }} - The gravity and lock delay timings.
    */
-  function lookupTimings(game: GameMode, level: number): { gravFrames: number; ldFrames: number } {
+  function lookupTimings(game: GameMode, level: number): { gravUnits: number; ldFrames: number } {
     const tap  = timings.TAP  as any;
     const tgm3 = timings.TGM3 as any;
     switch (game) {
-      case 'TGM1':  return { gravFrames: gravUnitToFrames(lookupGravUnit(TGM1_GRAV,  level)), ldFrames: lookupLock(timings.TGM1.delays as any[], level) };
-      case 'TAP-N': return { gravFrames: gravUnitToFrames(lookupGravUnit(TAPN_GRAV,  level)), ldFrames: lookupLock(tap.Normal.delays,  level) };
-      case 'TAP-M': return { gravFrames: gravUnitToFrames(lookupGravUnit(TAPM_GRAV,  level)), ldFrames: lookupLock(tap.Master.delays,  level) };
-      case 'TAP-D': return { gravFrames: 1,                                                   ldFrames: lookupLock(tap.Death.delays,   level) };
-      case 'TGM3':  return { gravFrames: gravUnitToFrames(lookupGravUnit(TAPM_GRAV,  level)), ldFrames: lookupLock(tgm3.delays,         level) };
-      case 'TGM3-S':return { gravFrames: 1,                                                   ldFrames: lookupLock(tgm3.Shirase.delays, level) };
+      case 'TGM1':  return { gravUnits: lookupGravUnit(TGM1_GRAV,  level), ldFrames: lookupLock(timings.TGM1.delays as any[], level) };
+      case 'TAP-N': return { gravUnits: lookupGravUnit(TAPN_GRAV,  level), ldFrames: lookupLock(tap.Normal.delays,  level) };
+      case 'TAP-M': return { gravUnits: lookupGravUnit(TAPM_GRAV,  level), ldFrames: lookupLock(tap.Master.delays,  level) };
+      case 'TAP-D': return { gravUnits: 5120,                              ldFrames: lookupLock(tap.Death.delays,   level) };
+      case 'TGM3':  return { gravUnits: lookupGravUnit(TAPM_GRAV,  level), ldFrames: lookupLock(tgm3.delays,         level) };
+      case 'TGM3-S':return { gravUnits: 5120,                              ldFrames: lookupLock(tgm3.Shirase.delays, level) };
     }
   }
 
@@ -269,11 +269,14 @@
   let gravityTotalFrames = 64;
   let gravityRemaining   = 64;
   let stepGravFrames     = 1;
+  let gravCellsPerDrop   = 1;  // cells to fall per countdown expiration (>1 for >1G)
 
-  function setGravityTotal(total: number) {
-    gravityTotalFrames = total;
-    gravityRemaining   = Math.min(gravityRemaining, total);
-    if (gravityRemaining < 1) gravityRemaining = total;
+  function setGravityTotal(rawUnits: number) {
+    gravCellsPerDrop   = rawUnits >= 256 ? Math.floor(rawUnits / 256) : 1;
+    const frames       = gravUnitToFrames(rawUnits);
+    gravityTotalFrames = frames;
+    gravityRemaining   = Math.min(gravityRemaining, frames);
+    if (gravityRemaining < 1) gravityRemaining = frames;
   }
 
   // ── Lock delay ─────────────────────────────────────────────────────────────
@@ -288,7 +291,7 @@
   // Apply level → update gravity + lock delay totals + ghost (not in custom mode)
   $: if (selectedSeries !== 'custom') {
     const t = lookupTimings(selectedGame, levelInput);
-    setGravityTotal(t.gravFrames);
+    setGravityTotal(t.gravUnits);
     lockDelayTotalFrames = t.ldFrames;
     setGhost(ghostForMode(selectedGame, levelInput));
   }
@@ -342,13 +345,18 @@
     // Advance gravity countdown
     gravityRemaining -= stepGravFrames;
     if (gravityRemaining <= 0) {
-      // Drop 1 row
-      const below = { ...piece, row: piece.row - 1 };
+      // Drop up to gravCellsPerDrop rows; stop early if piece hits something
+      let newPiece = piece;
+      for (let i = 0; i < gravCellsPerDrop; i++) {
+        const below = { ...newPiece, row: newPiece.row - 1 };
+        if (rotSys.collides(below, frame.board)) break;
+        newPiece = below;
+      }
       gravityRemaining = gravityTotalFrames + gravityRemaining; // absorb overshoot
       if (gravityRemaining <= 0) gravityRemaining = gravityTotalFrames;
       checkpoint();
       const newFrame = cloneFrame(frame);
-      newFrame.activePiece = below;
+      newFrame.activePiece = newPiece;
       newFrame.lockDelayProgress = undefined;
       newFrame.comment = '';
       newFrame.callouts = [];
@@ -470,6 +478,24 @@
     const { d, idx } = getFrameState();
     diagram.set(updateFrame(d, idx, { ...d.frames[idx], lineClearPostMs: val }));
   }
+
+  function onFrameDurSlider(e: Event) {
+    const val = parseInt((e.target as HTMLInputElement).value);
+    const { d, idx } = getFrameState();
+    diagram.set(updateFrame(d, idx, { ...d.frames[idx], durationMs: val }));
+  }
+
+  function onFrameDurInput(e: Event) {
+    const raw = (e.target as HTMLInputElement).value.trim();
+    const val = raw === '' ? undefined : Math.max(50, parseInt(raw));
+    const { d, idx } = getFrameState();
+    diagram.set(updateFrame(d, idx, { ...d.frames[idx], durationMs: val }));
+  }
+
+  function clearFrameDur() {
+    const { d, idx } = getFrameState();
+    diagram.set(updateFrame(d, idx, { ...d.frames[idx], durationMs: undefined }));
+  }
 </script>
 
 <div class="active-piece-controls">
@@ -587,7 +613,7 @@
     </div>
     <div class="timing-computed-row">
       <span class="timing-computed-label">Gravity rate</span>
-      <span class="timing-computed-value">{gravityTotalFrames === 1 ? 'instant' : `${gravityTotalFrames} frames / row`}</span>
+      <span class="timing-computed-value">{gravCellsPerDrop > 1 ? `${gravCellsPerDrop} rows / frame` : gravityTotalFrames === 1 ? '1G' : `${gravityTotalFrames} frames / row`}</span>
     </div>
     <div class="timing-computed-row">
       <span class="timing-computed-label">Lock delay</span>
@@ -643,6 +669,25 @@
     <span class="ld-hint">f per step</span>
   </div>
   {/if}
+
+  <!-- ── Frame duration ── -->
+  <div class="sub-label">FRAME DURATION</div>
+  <div class="ld-slider-row">
+    <input class="ld-slider" type="range" min="50" max="5000" step="50"
+      value={$currentFrame?.durationMs ?? $diagram.animationDelayMs}
+      on:input={onFrameDurSlider}
+    />
+    <input class="ld-num-input" type="number" min="50" max="5000"
+      value={$currentFrame?.durationMs ?? ''}
+      placeholder="auto"
+      title="Frame display duration in ms (empty = use diagram animation speed)"
+      on:change={onFrameDurInput}
+    />
+    <span class="ld-denom">ms</span>
+    {#if $currentFrame?.durationMs != null}
+      <button class="lc-btn" on:click={clearFrameDur} title="Reset to auto (use diagram animation speed)">auto</button>
+    {/if}
+  </div>
 
   <div class="sub-label">STACK OPERATIONS</div>
 

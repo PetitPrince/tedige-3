@@ -82,7 +82,7 @@ export async function exportGIF(
     const isLast = idx === diagram.frames.length - 1;
     // gifenc takes delay in centiseconds (1/100 s).
     // Lock-flash frames use a short fixed duration regardless of the diagram delay.
-    const frameDurationMs = isLast ? finalFrameHoldMs : frame.lockFlash ? LF_DEFAULT_MS : delay;
+    const frameDurationMs = isLast ? finalFrameHoldMs : frame.lockFlash ? LF_DEFAULT_MS : frame.durationMs ?? delay;
     const frameDelay = Math.round(frameDurationMs / 10);
 
     gif.writeFrame(indexed, W, H, {

@@ -70,6 +70,8 @@ export interface Frame {
   overlays?: OverlayCell[];
   /** When true, the active piece on this frame represents the moment of lock — rendered with a white flash. */
   lockFlash?: boolean;
+  /** Display duration override for this frame in ms. Undefined = use diagram animationDelayMs. */
+  durationMs?: number;
 }
 
 export const LC_DEFAULT_PRE_MS   = 150;

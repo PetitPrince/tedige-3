@@ -7,7 +7,7 @@ import type { PieceType } from '../types/piece';
 
 const RS_IDS: RotationSystemId[] = ['srs', 'ars', 'nes'];
 const DIR_IDS: CalloutDir[] = ['top', 'bottom', 'left', 'right', 'free'];
-const VERSION = 1;
+const VERSION = 2;
 
 // ── Board encoding ────────────────────────────────────────────────────────────
 // Differential RLE against previous board. Each run: [length:8][value:4].
@@ -146,9 +146,12 @@ function encodeFrame(frame: Frame, prev: Board, w: BitWriter): void {
 
   // Lock-flash flag (1 bit)
   w.write(frame.lockFlash ? 1 : 0, 1);
+
+  // Per-frame duration override (13 bits; 0=undefined/auto, N=(N-1)*10 ms)
+  w.write(encodeLcMs(frame.durationMs), 13);
 }
 
-function decodeFrameCore(prev: Board, r: BitReader): Frame {
+function decodeFrameCore(prev: Board, r: BitReader, version: number): Frame {
   const board = decodeBoard(prev, r);
 
   let activePiece = undefined;
@@ -221,6 +224,8 @@ function decodeFrameCore(prev: Board, r: BitReader): Frame {
 
   const lockFlash = r.read(1) === 1 ? true : undefined;
 
+  const durationMs = version >= 2 ? decodeLcMs(r.read(13)) : undefined;
+
   return {
     board,
     activePiece,
@@ -236,6 +241,7 @@ function decodeFrameCore(prev: Board, r: BitReader): Frame {
     lineClearPostMs,
     inputs: Object.keys(inputs).length ? inputs : undefined,
     lockFlash,
+    durationMs,
   };
 }
 
@@ -269,7 +275,7 @@ export function decodeDiagram(encoded: string): Diagram {
   if (!encoded.startsWith('v1@')) throw new Error('Unknown or unsupported format');
   const r = new BitReader(encoded.slice(3));
   const version = r.read(4);
-  if (version !== VERSION) throw new Error(`Unsupported version: ${version}`);
+  if (version > VERSION) throw new Error(`Unsupported version: ${version}`);
 
   const rsIdx = r.read(2);
   const rotationSystem: RotationSystemId = RS_IDS[rsIdx] ?? 'ars';
@@ -284,7 +290,7 @@ export function decodeDiagram(encoded: string): Diagram {
   const frames: Frame[] = [];
   let prev = createBoard();
   for (let i = 0; i < frameCount; i++) {
-    const frame = decodeFrameCore(prev, r);
+    const frame = decodeFrameCore(prev, r, version);
     frames.push(frame);
     prev = frame.board;
   }

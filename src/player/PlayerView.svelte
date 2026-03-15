@@ -361,7 +361,11 @@
    */
   function scheduleNextTick() {
     const f = frames[Math.min(currentIndex, total - 1)];
-    timer = setTimeout(tick, f?.lockFlash ? LF_DEFAULT_MS : delay);
+    let ms: number;
+    if (f?.lockFlash) ms = LF_DEFAULT_MS;
+    else if (f?.durationMs != null) ms = Math.max(50, f.durationMs / speedMultiplier);
+    else ms = delay;
+    timer = setTimeout(tick, ms);
   }
 
   function tick() {

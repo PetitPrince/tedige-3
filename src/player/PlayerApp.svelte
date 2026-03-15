@@ -25,8 +25,11 @@
     autoplay = params.has('autoplay');
     nextQueueLayout = (localStorage.getItem('tedige-nq-layout') ?? 'horizontal') as 'horizontal' | 'vertical';
 
-    // Build "edit" link back to the editor
-    editorUrl = '/' + (hash ? '#' + hash : '');
+    // Build "edit" link back to the editor.
+    // Use the current path's directory so this works under any base path
+    // (e.g. https://host/tedige-3/player → https://host/tedige-3/).
+    const basePath = window.location.pathname.replace(/\/[^/]*$/, '/');
+    editorUrl = basePath + (hash ? '#' + hash : '');
 
     if (!encoded) {
       error = 'No diagram data in URL. Use the editor\'s Export → Player to share a diagram.';

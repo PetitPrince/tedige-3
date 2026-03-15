@@ -1,6 +1,6 @@
 <script lang="ts">
   import { get } from 'svelte/store';
-  import { diagram, currentFrame, currentFrameIndex, showExport, renderConfig, getFrameState } from '../editor/store';
+  import { diagram, currentFrame, currentFrameIndex, showExport, renderConfig, getFrameState, nextQueueLayout } from '../editor/store';
   import { getRotationSystem } from '../rotation/index';
   import { encodeDiagram, decodeDiagram, diagramToUrlHash } from '../export/url-codec';
   import { downloadJSON, loadJSONFile } from '../export/json-export';
@@ -127,8 +127,9 @@
 
   function doPNGExport() {
     const frame = get(currentFrame);
-    const rotSys = getRotationSystem(get(diagram).rotationSystem);
-    downloadPNG(frame, rotSys, get(renderConfig));
+    const d = get(diagram);
+    const rotSys = getRotationSystem(d.rotationSystem);
+    downloadPNG(frame, rotSys, get(renderConfig), get(nextQueueLayout), d.nextQueueLength ?? 6);
   }
 
   function doSVGExport() {

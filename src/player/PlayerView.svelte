@@ -233,6 +233,7 @@
         ctx.textAlign = 'left';
         ctx.fillText(i === 0 ? 'NEXT' : String(i + 1), 3, zy + 2);
 
+        if (queue[i] === null) continue;
         const type  = queue[i];
         const shape = rotSys.getShape(type, 0);
         const cellType = pieceTypeToCellType(type);
@@ -306,22 +307,25 @@
       if (queue.length === 0) return;
 
       // First piece at full cellSize, centered horizontally, bottom-aligned
-      const firstShape = rotSys.getShape(queue[0], 0);
-      const firstMinDC = Math.min(...firstShape.map(m => m.deltaCol));
-      const firstMinDR = Math.min(...firstShape.map(m => m.deltaRow));
-      const firstMaxDC = Math.max(...firstShape.map(m => m.deltaCol));
-      const firstMaxDR = Math.max(...firstShape.map(m => m.deltaRow));
-      const firstBboxW = firstMaxDC - firstMinDC + 1;
-      const firstBboxH = firstMaxDR - firstMinDR + 1;
-      const firstXOff  = Math.floor((BOARD_COLS - firstBboxW) / 2) * cellSize;
-      const firstYOff  = (STRIP_ROWS - firstBboxH) * cellSize;
-      const firstCellType = pieceTypeToCellType(queue[0]);
-      for (const { deltaCol, deltaRow } of firstShape) {
-        drawCell(ctx, firstXOff + (deltaCol - firstMinDC) * cellSize, firstYOff + (deltaRow - firstMinDR) * cellSize, firstCellType, cellSize, skin);
+      if (queue[0] !== null) {
+        const firstShape = rotSys.getShape(queue[0], 0);
+        const firstMinDC = Math.min(...firstShape.map(m => m.deltaCol));
+        const firstMinDR = Math.min(...firstShape.map(m => m.deltaRow));
+        const firstMaxDC = Math.max(...firstShape.map(m => m.deltaCol));
+        const firstMaxDR = Math.max(...firstShape.map(m => m.deltaRow));
+        const firstBboxW = firstMaxDC - firstMinDC + 1;
+        const firstBboxH = firstMaxDR - firstMinDR + 1;
+        const firstXOff  = Math.floor((BOARD_COLS - firstBboxW) / 2) * cellSize;
+        const firstYOff  = (STRIP_ROWS - firstBboxH) * cellSize;
+        const firstCellType = pieceTypeToCellType(queue[0]);
+        for (const { deltaCol, deltaRow } of firstShape) {
+          drawCell(ctx, firstXOff + (deltaCol - firstMinDC) * cellSize, firstYOff + (deltaRow - firstMinDR) * cellSize, firstCellType, cellSize, skin);
+        }
       }
 
       // Pieces 2–6: smaller size, 2-row grid
       for (let i = 1; i < queue.length; i++) {
+        if (queue[i] === null) continue;
         const slotIsBottom = i <= 2;
         const slotCol = slotIsBottom ? i - 1 : i - 3;
         const x = secondX + slotCol * slotW;

@@ -62,7 +62,7 @@ export function hardDrop(
 
   // 4. Shift queue and spawn next piece
   const [nextType, ...remainingQueue] = frame.nextQueue;
-  const newActivePiece = nextType !== undefined
+  const newActivePiece = nextType != null
     ? rotSys.spawn(nextType, clearedBoard) ?? undefined
     : undefined;
 
@@ -89,7 +89,7 @@ export function holdPiece(
   if (frame.holdPiece === undefined) {
     // Hold is empty: move active into hold, spawn from queue
     const [nextType, ...remainingQueue] = frame.nextQueue;
-    if (nextType === undefined) return null;
+    if (nextType == null) return null;
     const next = cloneFrame(frame, true);
     next.activePiece = rotSys.spawn(nextType, frame.board) ?? undefined;
     next.nextQueue = remainingQueue;

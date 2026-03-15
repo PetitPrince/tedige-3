@@ -93,7 +93,7 @@ function encodeFrame(frame: Frame, prev: Board, w: BitWriter): void {
   const qLen = Math.min(frame.nextQueue.length, 6);
   w.write(qLen, 3);
   for (let i = 0; i < qLen; i++) {
-    w.write(frame.nextQueue[i], 3);
+    w.write(frame.nextQueue[i] ?? 7, 3);  // null encoded as 7 (unused piece-type value)
   }
 
   // Show ghost flag
@@ -167,9 +167,10 @@ function decodeFrameCore(prev: Board, r: BitReader): Frame {
   }
 
   const qLen = r.read(3);
-  const nextQueue: PieceType[] = [];
+  const nextQueue: (PieceType | null)[] = [];
   for (let i = 0; i < qLen; i++) {
-    nextQueue.push(r.read(3) as PieceType);
+    const v = r.read(3);
+    nextQueue.push(v === 7 ? null : v as PieceType);  // 7 = empty slot sentinel
   }
 
   const showGhost = r.read(1) === 1;

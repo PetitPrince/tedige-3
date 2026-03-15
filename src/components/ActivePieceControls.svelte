@@ -96,8 +96,8 @@
     const newBoard = boardWithPiece(frame.board, frame.activePiece, shape);
     let newActivePiece: typeof frame.activePiece | undefined = undefined;
     let newQueue = frame.nextQueue;
-    if (distributeNextPiece && frame.nextQueue.length > 0) {
-      const [nextType, ...remainingQueue] = frame.nextQueue;
+    if (distributeNextPiece && frame.nextQueue.length > 0 && frame.nextQueue[0] != null) {
+      const [nextType, ...remainingQueue] = frame.nextQueue as [PieceType, ...(PieceType | null)[]];
       // rotSys.spawn() places pieces in the buffer zone (row 21), above the visible board.
       // Use its col, but pin the row to BOARD_ROWS-1 so the piece is visible.
       const bufferSpawn = rotSys.spawn(nextType, newBoard);

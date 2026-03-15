@@ -82,7 +82,7 @@ export function mirrorFrame(frame: Frame, rotSys: RotationSystem): Frame {
       ? mirrorActivePiece(frame.activePiece, rotSys) ?? undefined
       : undefined,
     holdPiece: frame.holdPiece !== undefined ? mirrorPieceType(frame.holdPiece) : undefined,
-    nextQueue: frame.nextQueue.map(mirrorPieceType),
+    nextQueue: frame.nextQueue.map(p => p === null ? null : mirrorPieceType(p)),
     callouts: (frame.callouts ?? []).map(c => ({
       ...c,
       col: BOARD_COLS - 1 - c.col,

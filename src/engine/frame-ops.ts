@@ -94,7 +94,7 @@ export function advanceFrame(
   const [nextType, ...remainingQueue] = frame.nextQueue;
 
   // 4. Spawn new active piece if one is queued
-  const newActivePiece = nextType !== undefined
+  const newActivePiece = nextType != null
     ? rotSys.spawn(nextType, clearedBoard) ?? undefined
     : undefined;
 

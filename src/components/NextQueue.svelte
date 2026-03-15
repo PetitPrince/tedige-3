@@ -77,6 +77,7 @@
 
       for (let i = 0; i < queue.length; i++) {
         const zy = i * slotH;
+        if (queue[i] === null) continue;
         const type  = queue[i];
         const shape = rotSys.getShape(type, 0);
         const cellType    = pieceTypeToCellType(type);
@@ -100,7 +101,7 @@
 
     // ── Compute first piece layout (needed for zone left edge) ────────────────
     let firstShape, firstMinDeltaCol, firstMinDeltaRow, firstBboxW, firstBboxH, firstXOff, firstYOff;
-    if (queue.length > 0) {
+    if (queue.length > 0 && queue[0] !== null) {
       firstShape  = rotSys.getShape(queue[0], 0);
       firstMinDeltaCol  = Math.min(...firstShape.map(m => m.deltaCol));
       const firstMaxDeltaCol = Math.max(...firstShape.map(m => m.deltaCol));
@@ -190,6 +191,7 @@
       const x = secondX + slotCol * slotW2;
       const y = slotIsBottom ? halfH2 : 0;
 
+      if (queue[i] === null) continue;
       const type  = queue[i];
       const shape = rotSys.getShape(type, 0);
       const cellType    = pieceTypeToCellType(type);
@@ -252,16 +254,12 @@
     const frame = get(currentFrame);
     const queue = [...frame.nextQueue];
     if (slot === queue.length && slot < (get(diagram).nextQueueLength ?? 6)) {
-      // First empty slot: add a new piece starting at I
+      // First slot beyond current queue: add I (quick add)
       queue.push(PieceType.I);
     } else if (slot < queue.length) {
-      // Existing piece: cycle I→O→T→S→Z→J→L→(remove)
-      const next = queue[slot] + 1;
-      if (next > 6) {
-        queue.splice(slot, 1);
-      } else {
-        queue[slot] = next as PieceType;
-      }
+      // Cycle: null→I→O→T→S→Z→J→L→null (never splices; use right-click to remove)
+      const cur = queue[slot];
+      queue[slot] = cur === null ? PieceType.I : (cur + 1 > 6 ? null : (cur + 1) as PieceType);
     } else {
       return;
     }

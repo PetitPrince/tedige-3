@@ -51,7 +51,7 @@ export interface OverlayCell {
 export interface Frame {
   board: Board;
   activePiece?: ActivePiece;
-  nextQueue: PieceType[];    // 0–6 upcoming pieces; index 0 = next to spawn
+  nextQueue: (PieceType | null)[];  // 0–6 upcoming pieces; null = empty slot; index 0 = next to spawn
   holdPiece?: PieceType;
   comment: string;
   showGhost: boolean;

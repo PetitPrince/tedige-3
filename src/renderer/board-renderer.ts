@@ -433,6 +433,100 @@ function roundedRect(
   ctx.closePath();
 }
 
+/**
+ * Draw the full speech-bubble shape (rounded rect + tail) as a single path.
+ * The tail sides are quadratic bezier curves that start tangent to the bubble
+ * edge (no seam, no border line crossing the tail base).
+ *
+ * exitEdge — which edge of the bubble the tail exits from:
+ *   'bottom' | 'top'  → tailBaseX is the center along that horizontal edge
+ *   'right'  | 'left' → tailBaseY is the center along that vertical edge
+ * hw — half-width of the tail at the base
+ */
+function speechBubblePath(
+  ctx: CanvasRenderingContext2D,
+  bx: number, by: number, bw: number, bh: number, r: number,
+  tipX: number, tipY: number,
+  baseX: number, baseY: number,
+  exitEdge: 'bottom' | 'top' | 'right' | 'left',
+  hw: number,
+): void {
+  // Clamp base-corner coords so they stay within the straight part of each edge
+  const lb = Math.max(baseX - hw, bx + r);
+  const rb = Math.min(baseX + hw, bx + bw - r);
+  const tb = Math.max(baseY - hw, by + r);
+  const bb = Math.min(baseY + hw, by + bh - r);
+
+  ctx.beginPath();
+
+  if (exitEdge === 'bottom') {
+    // Tail exits downward from the bottom edge
+    const cy = (by + bh + tipY) / 2;
+    ctx.moveTo(bx + r, by);
+    ctx.lineTo(bx + bw - r, by);
+    ctx.arcTo(bx + bw, by,      bx + bw, by + r,      r);
+    ctx.lineTo(bx + bw, by + bh - r);
+    ctx.arcTo(bx + bw, by + bh, bx + bw - r, by + bh, r);
+    ctx.lineTo(rb, by + bh);
+    ctx.quadraticCurveTo(rb, cy,  tipX, tipY);   // right tail side, tangent-vertical at base
+    ctx.quadraticCurveTo(lb, cy,  lb, by + bh);  // left tail side
+    ctx.lineTo(bx + r, by + bh);
+    ctx.arcTo(bx, by + bh, bx, by + bh - r,      r);
+    ctx.lineTo(bx, by + r);
+    ctx.arcTo(bx, by,      bx + r, by,            r);
+
+  } else if (exitEdge === 'top') {
+    // Tail exits upward from the top edge
+    const cy = (by + tipY) / 2;
+    ctx.moveTo(bx + r, by);
+    ctx.lineTo(lb, by);
+    ctx.quadraticCurveTo(lb, cy,  tipX, tipY);   // left tail side
+    ctx.quadraticCurveTo(rb, cy,  rb, by);        // right tail side
+    ctx.lineTo(bx + bw - r, by);
+    ctx.arcTo(bx + bw, by,      bx + bw, by + r,      r);
+    ctx.lineTo(bx + bw, by + bh - r);
+    ctx.arcTo(bx + bw, by + bh, bx + bw - r, by + bh, r);
+    ctx.lineTo(bx + r, by + bh);
+    ctx.arcTo(bx, by + bh, bx, by + bh - r,      r);
+    ctx.lineTo(bx, by + r);
+    ctx.arcTo(bx, by,      bx + r, by,            r);
+
+  } else if (exitEdge === 'right') {
+    // Tail exits rightward from the right edge
+    const cx = (bx + bw + tipX) / 2;
+    ctx.moveTo(bx + r, by);
+    ctx.lineTo(bx + bw - r, by);
+    ctx.arcTo(bx + bw, by,      bx + bw, by + r,      r);
+    ctx.lineTo(bx + bw, tb);
+    ctx.quadraticCurveTo(cx, tb,  tipX, tipY);   // top tail side
+    ctx.quadraticCurveTo(cx, bb,  bx + bw, bb);  // bottom tail side
+    ctx.lineTo(bx + bw, by + bh - r);
+    ctx.arcTo(bx + bw, by + bh, bx + bw - r, by + bh, r);
+    ctx.lineTo(bx + r, by + bh);
+    ctx.arcTo(bx, by + bh, bx, by + bh - r,      r);
+    ctx.lineTo(bx, by + r);
+    ctx.arcTo(bx, by,      bx + r, by,            r);
+
+  } else {
+    // 'left': tail exits leftward from the left edge
+    const cx = (bx + tipX) / 2;
+    ctx.moveTo(bx + r, by);
+    ctx.lineTo(bx + bw - r, by);
+    ctx.arcTo(bx + bw, by,      bx + bw, by + r,      r);
+    ctx.lineTo(bx + bw, by + bh - r);
+    ctx.arcTo(bx + bw, by + bh, bx + bw - r, by + bh, r);
+    ctx.lineTo(bx + r, by + bh);
+    ctx.arcTo(bx, by + bh, bx, by + bh - r,      r);
+    ctx.lineTo(bx, bb);
+    ctx.quadraticCurveTo(cx, bb,  tipX, tipY);   // bottom tail side
+    ctx.quadraticCurveTo(cx, tb,  bx, tb);        // top tail side
+    ctx.lineTo(bx, by + r);
+    ctx.arcTo(bx, by,      bx + r, by,            r);
+  }
+
+  ctx.closePath();
+}
+
 export interface CalloutLayout {
   bubbleX: number;
   bubbleY: number;
@@ -579,38 +673,47 @@ export function drawCallouts(
 
     const layout = computeCalloutLayout(callout, bubbleW, bubbleH, cellSize, W, H);
     const { bubbleX, bubbleY, tailTipX, tailTipY, tailBaseX, tailBaseY, radius } = layout;
+    const dir = callout.dir ?? 'top';
+    const hw = Math.max(5, Math.round(cellSize * 0.15));
 
-    // Generic perpendicular tail triangle
-    const tdx = tailBaseX - tailTipX;
-    const tdy = tailBaseY - tailTipY;
-    const tlen = Math.sqrt(tdx * tdx + tdy * tdy) || 1;
-    const px = (-tdy / tlen) * 5;
-    const py = (tdx / tlen) * 5;
+    // Map callout direction to the bubble edge the tail exits from.
+    // For 'free', detect by proximity to each edge.
+    let exitEdge: 'bottom' | 'top' | 'right' | 'left';
+    if (dir === 'top')         exitEdge = 'bottom';
+    else if (dir === 'bottom') exitEdge = 'top';
+    else if (dir === 'left')   exitEdge = 'right';
+    else if (dir === 'right')  exitEdge = 'left';
+    else {
+      const eps = 2;
+      if      (Math.abs(tailBaseY - (bubbleY + bubbleH)) < eps) exitEdge = 'bottom';
+      else if (Math.abs(tailBaseY - bubbleY) < eps)             exitEdge = 'top';
+      else if (Math.abs(tailBaseX - (bubbleX + bubbleW)) < eps) exitEdge = 'right';
+      else                                                       exitEdge = 'left';
+    }
 
-    // Shadow + bubble fill
+    // Shadow pass — single path covers bubble + tail
     ctx.save();
     ctx.shadowColor = 'rgba(0,0,0,0.35)';
     ctx.shadowBlur = 4;
     ctx.shadowOffsetX = 1;
     ctx.shadowOffsetY = 2;
     ctx.fillStyle = 'rgba(255,255,255,0.97)';
-    roundedRect(ctx, bubbleX, bubbleY, bubbleW, bubbleH, radius);
+    speechBubblePath(ctx, bubbleX, bubbleY, bubbleW, bubbleH, radius,
+      tailTipX, tailTipY, tailBaseX, tailBaseY, exitEdge, hw);
     ctx.fill();
     ctx.restore();
 
-    // Tail (drawn after shadow so it doesn't cast its own shadow edge)
+    // Fill (no shadow)
     ctx.fillStyle = 'rgba(255,255,255,0.97)';
-    ctx.beginPath();
-    ctx.moveTo(tailBaseX + px, tailBaseY + py);
-    ctx.lineTo(tailBaseX - px, tailBaseY - py);
-    ctx.lineTo(tailTipX, tailTipY);
-    ctx.closePath();
+    speechBubblePath(ctx, bubbleX, bubbleY, bubbleW, bubbleH, radius,
+      tailTipX, tailTipY, tailBaseX, tailBaseY, exitEdge, hw);
     ctx.fill();
 
-    // Border
+    // Border follows the full outline (no line crossing the tail base)
     ctx.strokeStyle = 'rgba(0,0,0,0.15)';
     ctx.lineWidth = 1;
-    roundedRect(ctx, bubbleX, bubbleY, bubbleW, bubbleH, radius);
+    speechBubblePath(ctx, bubbleX, bubbleY, bubbleW, bubbleH, radius,
+      tailTipX, tailTipY, tailBaseX, tailBaseY, exitEdge, hw);
     ctx.stroke();
 
     // Text lines
